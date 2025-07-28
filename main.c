@@ -4,11 +4,8 @@
 #include "math.h"
 
 /*
- *
  * #define ADC0_BASE ADCA_BASE é o pino AA0
  * #define DAC0_BASE DACB_BASE é o pino AA1
- *
- *
  */
 
 // Parte de compartilhamento de memória
@@ -147,29 +144,6 @@ __interrupt void INT_myCPUTIMER0_ISR(void)
     Interrupt_clearACKGroup(INT_myCPUTIMER0_INTERRUPT_ACK_GROUP);
 }
 
-/*
-__interrupt void INT_ADC0_1_ISR(void)
-{
-    // Dispara conversão ADC no canal 0 (AA0)
-    // Lê valor convertido do ADC
-    uint16_t adcResult;
 
-    adcResult = ADC_readResult(ADCARESULT_BASE, ADC0_SOC0);
 
-    // Converte adcResult para volts (se quiser)
-    adcVoltage = ((float) (adcResult*norm_ADC));
 
-    fVal = adcVoltage;
-
-    ADC_clearInterruptStatus(ADC0_BASE, ADC_INT_NUMBER1);
-    Interrupt_clearACKGroup(INT_ADC0_1_INTERRUPT_ACK_GROUP);
-
-}
-
-__interrupt void cla1Isr1(void)
-{
-  EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, duty_cmp);
-
-  Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP11);
-}
-*/
