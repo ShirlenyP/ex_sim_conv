@@ -1,46 +1,46 @@
-#include "driverlib.h"
-#include "board.h"
 #include "shared_vars.h"
+#include "driverlib.h"
+#include "device.h"
+#include "board.h"
 
-//buck
-//#define B0 0.001033f
-//#define B1 0.000767f
-//#define B2 -0.000266f
-//#define A1 -1.521886f
-//#define A2  0.521886f
-//#define REF 20.0f
+#define B0  0.001033f
+#define B1  0.000767f
+#define B2 -0.000266f
+#define A1 -1.521886f
+#define A2  0.521886f
+//#define REF 8.0f
 
-//boost
-//#define B0 0.001195f
-//#define B1 -0.000960f
-//#define B2 0.0f
-//#define A1 -1.000000f
-//#define A2 0.0f
+#define norm_ADC  18.0f/4095.0F
 
-//#define UL  1.0f
-//#define LL  0.0f
-#define norm_ADC 18.0f/4095.0F
-#define PWM_TOP 5000
+#define PWM_TOP 5000U  // deve coincidir com TBPRD do EPWM
+#define UL 1.0f         // upper limit
+#define LL 0.0f         // lower limit
 
-__interrupt void Cla1Task1()
+
+uint16_t duty_cmp;
+
+ float x[3];
+ float y[3];
+
+__interrupt void Cla1Task1(void)
 {
 
-    fResult =  ADC_readResult(ADCARESULT_BASE, ADC0_SOC0);
+   fResult = ADC_readResult(ADCARESULT_BASE, ADC0_SOC0);
+     // Converte adcResult para volts (se quiser)
+   adcVoltage = ((float) (fResult*norm_ADC));
 
-  //  cmp_Value = (uint32_t) (g_duty_cycle * PWM_TOP);
-   // EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, cmp_Value);
-    //ePwm_curDuty = EPWM_getCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A);
 
-            /*
-    x[2] = x[1]; x[1] = x[0]; x[0] = REF - fVal;
+    x[2] = x[1]; x[1] = x[0]; x[0] = REF - adcVoltage;
     y[2] = y[1]; y[1] = y[0];
 
     y[0] = B0*x[0] + B1*x[1] + B2*x[2] - A1*y[1] - A2*y[2];
 
 
-    if (y[0] > UL) y[0] = UL;
-    if (y[0] < LL) y[0] = LL;
+     if (y[0] > UL) y[0] = UL;
+     if (y[0] < LL) y[0] = LL;
 
-    fResult = y[0];
-    */
+     duty_cmp = (uint16_t)(PWM_TOP * (1.0f - y[0]));
+
+    EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, duty_cmp);
+
 }

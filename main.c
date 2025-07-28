@@ -2,7 +2,6 @@
 #include "device.h"
 #include "board.h"
 #include "math.h"
-#include "shared_vars.h"
 
 /*
  *
@@ -12,19 +11,26 @@
  *
  */
 
-
 // Parte de compartilhamento de memória
 
-//#pragma DATA_SECTION(adcVoltage,"CpuToCla1MsgRAM");
-//volatile float adcVoltage;
+//#pragma DATA_SECTION(adcVoltage, "CPUToCla1MsgRAM")
+//extern volatile float adcVoltage;
 
-//#pragma DATA_SECTION(cmp_Value,"Cla1ToCpuMsgRAM");
-//volatile uint32_t cmp_Value;
+
+#pragma DATA_SECTION(fVal,"CpuToCla1MsgRAM");
+float fVal;
+#pragma DATA_SECTION(fResult,"Cla1ToCpuMsgRAM");
+float fResult;
+#pragma DATA_SECTION(adcVoltage,"Cla1ToCpuMsgRAM");
+volatile float adcVoltage;
+#pragma DATA_SECTION(REF,"Cla1ToCpuMsgRAM");
+float REF = 8.0f;
 
 
 // VREF é a tensão de referência do DAC/ADC
+
 #define norm_DAC 4095.0f/18.0f
-#define norm_ADC  18.0f/4095.0F
+//#define norm_ADC  18.0f/4095.0F
 
 // varaveis criadas para  PWM
 uint32_t ePwm_TimeBase;
@@ -32,14 +38,13 @@ uint32_t ePwm_MinDuty;
 uint32_t ePwm_MaxDuty;
 uint32_t ePwm_curDuty;
 
-volatile float adcVoltage;
 volatile uint32_t cmp_Value;
 //
 // Definições de Constantes
 //
 #define F_PWM                  10000.0f     // Frequência de chaveamento (Hz)
 #define T_PWM                  (1.0f / F_PWM) // Período de chaveamento (s)
-#define DT_SIM                 0.000005f    // Passo de simulação (5 µs)
+#define DT_SIM                 0.000001f    // Passo de simulação (5 µs)
 #define N_STEPS_PER_CYCLE      (uint32_t)(T_PWM / DT_SIM) // Passos por ciclo PWM
 
 // Parâmetros do Conversor Buck
@@ -60,10 +65,9 @@ volatile bool g_switch_on = false;           // Estado da chave (true = ligada)
 volatile bool g_new_step_ready = false;     // Flag para novo passo de simulação
 volatile float g_duty_cycle = 0.5f;          // Razão cíclica (entre 0 e 1)
 
-#pragma DATA_SECTION(fVal,"CpuToCla1MsgRAM");
-float fVal;
-#pragma DATA_SECTION(fResult,"Cla1ToCpuMsgRAM");
-float fResult;
+__interrupt void INT_myGPIO0_XINT_ISR(void);
+__interrupt void INT_myCPUTIMER0_ISR(void);
+
 void main(void)
 {
     uint16_t dacVal;
@@ -83,9 +87,11 @@ void main(void)
 
     while (1)
     {
-        cmp_Value = (uint32_t) (g_duty_cycle * ePwm_TimeBase);
-        EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, cmp_Value);
-        ePwm_curDuty = EPWM_getCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A);
+
+
+      //  cmp_Value = (uint32_t) (g_duty_cycle * ePwm_TimeBase);
+      //  EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, cmp_Value);
+     //   ePwm_curDuty = EPWM_getCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A);
 
         if (g_new_step_ready)
         {
@@ -141,24 +147,29 @@ __interrupt void INT_myCPUTIMER0_ISR(void)
     Interrupt_clearACKGroup(INT_myCPUTIMER0_INTERRUPT_ACK_GROUP);
 }
 
+/*
+__interrupt void INT_ADC0_1_ISR(void)
+{
+    // Dispara conversão ADC no canal 0 (AA0)
+    // Lê valor convertido do ADC
+    uint16_t adcResult;
 
-//__interrupt void INT_ADC0_1_ISR(void)
-//{
-//    // Dispara conversão ADC no canal 0 (AA0)
-//    // Lê valor convertido do ADC
-//    uint16_t adcResult;
-//
-//    adcResult = ADC_readResult(ADCARESULT_BASE, ADC0_SOC0);
-//
-//    // Converte adcResult para volts (se quiser)
-//    adcVoltage = ((float) (adcResult*norm_ADC));
-//
-//    ADC_clearInterruptStatus(ADC0_BASE, ADC_INT_NUMBER1);
-//    Interrupt_clearACKGroup(INT_ADC0_1_INTERRUPT_ACK_GROUP);
-//
-//}
-//
-//__interrupt void cla1Isr1()
-// {
-//
-// }
+    adcResult = ADC_readResult(ADCARESULT_BASE, ADC0_SOC0);
+
+    // Converte adcResult para volts (se quiser)
+    adcVoltage = ((float) (adcResult*norm_ADC));
+
+    fVal = adcVoltage;
+
+    ADC_clearInterruptStatus(ADC0_BASE, ADC_INT_NUMBER1);
+    Interrupt_clearACKGroup(INT_ADC0_1_INTERRUPT_ACK_GROUP);
+
+}
+
+__interrupt void cla1Isr1(void)
+{
+  EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, duty_cmp);
+
+  Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP11);
+}
+*/

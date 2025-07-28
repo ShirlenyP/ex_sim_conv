@@ -8,18 +8,11 @@
 #ifndef SHARED_VARS_H_
 #define SHARED_VARS_H_
 
+#include <stdint.h>
+
+
 extern float fVal;
-
-//extern volatile float adcVoltage;
-//extern volatile uint32_t cmp_Value;
-//extern volatile float g_duty_cycle;
-//extern uint16_t adcResult;
 extern float fResult;
-
-//extern float REF;
-
-//extern float x[3];
-//extern float y[3];
-
-
+extern volatile float adcVoltage;
+extern  float REF;
 #endif /* SHARED_VARS_H_ */

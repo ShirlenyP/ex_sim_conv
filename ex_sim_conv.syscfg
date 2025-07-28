@@ -41,6 +41,7 @@ adc1.soc0SampleWindow               = 16;
 adc1.enableInterrupt1ContinuousMode = true;
 adc1.useInterrupts                  = false;
 adc1.soc0Trigger                    = "ADC_TRIGGER_EPWM1_SOCA";
+adc1.soc0Channel                    = "ADC_CH_ADCIN2";
 
 cla1.$name              = "myCLA0";
 cla1.enable_CLA_TASK_2  = false;
