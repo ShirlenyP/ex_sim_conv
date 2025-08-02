@@ -94,8 +94,11 @@ void main(void)
         {
             g_new_step_ready = false;
 
-            // Tensão no indutor
-            v_l = g_switch_on ? (VIN - g_vout_sim) : (-g_vout_sim);
+            // Tensão no indutor (modelo Buck)
+            //v_l = g_switch_on ? (VIN - g_vout_sim) : (-g_vout_sim);
+
+            // Tensão no indutor (modelo Boost)
+            v_l = g_switch_on ? VIN : (VIN - g_vout_sim);
 
             // Corrente do capacitor
             i_c = g_il_sim - (g_vout_sim * INV_R_LOAD);
@@ -107,8 +110,10 @@ void main(void)
             if (g_vout_sim < 0.0f)
                 g_vout_sim = 0.0f;
 
-            if (g_vout_sim > VIN)
-                g_vout_sim = VIN;
+           // if (g_vout_sim > VIN) g_vout_sim = VIN;
+
+            if (g_vout_sim > 3.0f * VIN) g_vout_sim = 3.0f * VIN;  // o Boost simule uma saída maior que VIN
+
 
            dacVal = (uint16_t) ((g_vout_sim * norm_DAC));
 
