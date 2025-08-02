@@ -21,13 +21,12 @@ float fResult;
 #pragma DATA_SECTION(adcVoltage,"Cla1ToCpuMsgRAM");
 volatile float adcVoltage;
 #pragma DATA_SECTION(REF,"Cla1ToCpuMsgRAM");
-float REF = 8.0f;
+float REF = 30.0f;
 
 
 // VREF é a tensão de referência do DAC/ADC
 
-#define norm_DAC 4095.0f/18.0f
-//#define norm_ADC  18.0f/4095.0F
+#define norm_DAC 4095.0f/43.56f
 
 // varaveis criadas para  PWM
 uint32_t ePwm_TimeBase;
@@ -44,7 +43,7 @@ volatile uint32_t cmp_Value;
 #define DT_SIM                 0.000001f    // Passo de simulação (5 µs)
 #define N_STEPS_PER_CYCLE      (uint32_t)(T_PWM / DT_SIM) // Passos por ciclo PWM
 
-// Parâmetros do Conversor Buck
+// Parâmetros do Conversor Boost
 #define VIN                    12.0f       // Tensão de entrada (V)
 #define L                      0.001f      // Indutância (H)
 #define C                      0.00001f    // Capacitância (F)
@@ -110,11 +109,14 @@ void main(void)
             if (g_vout_sim < 0.0f)
                 g_vout_sim = 0.0f;
 
-           // if (g_vout_sim > VIN) g_vout_sim = VIN;
+           // if (g_vout_sim > VIN) g_vout_sim = VIN; (modelo Buck)
 
             if (g_vout_sim > 3.0f * VIN) g_vout_sim = 3.0f * VIN;  // o Boost simule uma saída maior que VIN
 
 
+
+
+            // Saída da tensão simulada no DAC
            dacVal = (uint16_t) ((g_vout_sim * norm_DAC));
 
            dacVal = (dacVal > 4095) ? 4095 :  dacVal;

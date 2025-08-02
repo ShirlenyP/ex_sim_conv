@@ -10,7 +10,8 @@
 #define A2  0.521886f
 //#define REF 8.0f
 
-#define norm_ADC  18.0f/4095.0F
+
+#define norm_ADC  40f/4095.0F
 
 #define PWM_TOP 5000U  // deve coincidir com TBPRD do EPWM
 #define UL 1.0f         // upper limit
