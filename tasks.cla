@@ -3,29 +3,18 @@
 #include "device.h"
 #include "board.h"
 
-//#define B0 0.0105325f
-//#define B1 -0.0094675f
 
-#define B0 0.000532715f
-#define B1 0.000532715f
+#define B0 0.001266f
+#define B1 -0.000734f
 #define B2 0.0f
 #define A1 -1.000000f
 #define A2 0.0f
 
-
-/*
-#define B0  0.001033f
-#define B1  0.000767f
-#define B2 -0.000266f
-#define A1 -1.521886f
-#define A2  0.521886f
-//#define REF 8.0f
-*/
 #define norm_ADC  (84.0f)/4095.0F
 #define norm_ADC_il  (8.4f)/4095.0F
 
 
-#define PWM_TOP 5000U  // deve coincidir com TBPRD do EPWM
+#define PWM_TOP 2500U  // deve coincidir com TBPRD do EPWM
 #define UL 0.95f         // upper limit
 #define LL 0.05f         // lower limit
 
@@ -60,14 +49,4 @@ __interrupt void Cla1Task1(void)
 
     EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, duty_cmp);
 
-/*
-    if (EPWM_getTripZoneFlagStatus(EPWM0_BASE) & EPWM_TZ_FLAG_OST)
-   {
-        if (adcAmper < LIMIAR_REARME_ADC)
-        {
-            CMPSS_clearFilterLatchHigh(myCMPSS0_BASE); // libera latch do comparador
-            EPWM_clearTripZoneFlag(EPWM0_BASE, EPWM_TZ_INTERRUPT | EPWM_TZ_FLAG_OST | EPWM_TZ_FLAG_DCAEVT1);
-        }
-    }
-*/
 }

@@ -5,11 +5,8 @@
 
 
 /*
- *
- * #define ADC0_BASE ADCA_BASE é o pino AA0
- * #define DAC0_BASE DACB_BASE é o pino AA1
- *
- *
+ #define ADC0_BASE ADCA_BASE é o pino AA0
+ #define DAC0_BASE DACB_BASE é o pino AA1
  */
 
 // Parte de compartilhamento de memória
@@ -49,16 +46,18 @@ volatile bool g_trip_clear = false;
 
 // Definições de Constantes
 //
-#define F_PWM                  10000.0f     // Frequência de chaveamento (Hz)
+#define F_PWM                  20000.0f     // Frequência de chaveamento (Hz)
 #define T_PWM                  (1.0f / F_PWM) // Período de chaveamento (s)
 #define DT_SIM                 0.000001f    // Passo de simulação (5 µs)
 #define N_STEPS_PER_CYCLE      (uint32_t)(T_PWM / DT_SIM) // Passos por ciclo PWM
 
-// Parâmetros do Conversor Buck
+// Parâmetros do Conversor Boost
 #define VIN                    12.0f       // Tensão de entrada (V)
 #define L                      0.001f      // Indutância (H)
 #define C                      0.00001f    // Capacitância (F)
 #define R_LOAD                 10.0f       // Carga resistiva (Ohm)
+//volatile uint32_t  R_LOAD  = 10.0f ;
+
 
 // Constantes auxiliares (evita divisões repetidas no loop)
 #define INV_L                  (DT_SIM / L)
@@ -95,10 +94,6 @@ void main(void)
 
     while (1)
     {
-
-     //  cmp_Value = (uint32_t) (g_duty_cycle * ePwm_TimeBase);
-     //  EPWM_setCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A, cmp_Value);
-     //   ePwm_curDuty = EPWM_getCounterCompareValue(EPWM0_BASE, EPWM_COUNTER_COMPARE_A);
 
         if (g_new_step_ready)
         {
@@ -149,7 +144,7 @@ void main(void)
                   EPWM_clearTripZoneFlag(EPWM0_BASE,EPWM_TZ_INTERRUPT | EPWM_TZ_FLAG_OST | EPWM_TZ_FLAG_DCAEVT1);
 
               }
-              //g_trip_clear  = 0;
+
           }
 
       }
