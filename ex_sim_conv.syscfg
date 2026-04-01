@@ -9,23 +9,113 @@
 /**
  * Import the modules used in this configuration.
  */
-const cputimer  = scripting.addModule("/driverlib/cputimer.js", {}, false);
-const cputimer1 = cputimer.addInstance();
-const dac       = scripting.addModule("/driverlib/dac.js", {}, false);
-const dac1      = dac.addInstance();
+const adc              = scripting.addModule("/driverlib/adc.js", {}, false);
+const adc1             = adc.addInstance();
+const cla              = scripting.addModule("/driverlib/cla.js", {}, false);
+const cla1             = cla.addInstance();
+const cputimer         = scripting.addModule("/driverlib/cputimer.js", {}, false);
+const cputimer1        = cputimer.addInstance();
+const dac              = scripting.addModule("/driverlib/dac.js", {}, false);
+const dac1             = dac.addInstance();
+const dac2             = dac.addInstance();
+const epwm             = scripting.addModule("/driverlib/epwm.js", {}, false);
+const epwm1            = epwm.addInstance();
+const gpio             = scripting.addModule("/driverlib/gpio.js", {}, false);
+const gpio1            = gpio.addInstance();
+const inputxbar_input  = scripting.addModule("/driverlib/inputxbar_input.js", {}, false);
+const inputxbar_input1 = inputxbar_input.addInstance();
+const memcfg           = scripting.addModule("/driverlib/memcfg.js");
+const CMD              = scripting.addModule("/utilities/cmd_tool/cmd_syscfg/source/CMD", {}, false);
+const CMD1             = CMD.addInstance();
 
 /**
  * Write custom configuration values to the imported modules.
  */
+adc1.$name                          = "ADC0";
+adc1.adcClockPrescaler              = "ADC_CLK_DIV_4_0";
+adc1.enabledSOCs                    = ["ADC_SOC_NUMBER0"];
+adc1.interruptPulseMode             = "ADC_PULSE_END_OF_CONV";
+adc1.enabledInts                    = ["ADC_INT_NUMBER1"];
+adc1.enableInterrupt1               = true;
+adc1.registerInterrupts             = ["1"];
+adc1.soc0SampleWindow               = 16;
+adc1.enableInterrupt1ContinuousMode = true;
+adc1.useInterrupts                  = false;
+adc1.soc0Trigger                    = "ADC_TRIGGER_EPWM1_SOCA";
+adc1.soc0Channel                    = "ADC_CH_ADCIN2";
+
+cla1.$name              = "myCLA0";
+cla1.enable_CLA_TASK_2  = false;
+cla1.enable_CLA_TASK_3  = false;
+cla1.enable_CLA_TASK_5  = false;
+cla1.enable_CLA_TASK_4  = false;
+cla1.enable_CLA_TASK_7  = false;
+cla1.enable_CLA_TASK_8  = false;
+cla1.enable_CLA_TASK_6  = false;
+cla1.trigger_CLA_TASK_1 = "CLA_TRIGGER_ADCA1";
+cla1.cpuint_CLA_TASK_1  = false;
+cla1.cpuint_CLA_TASK_2  = false;
+cla1.cpuint_CLA_TASK_3  = false;
+cla1.cpuint_CLA_TASK_4  = false;
+cla1.cpuint_CLA_TASK_5  = false;
+cla1.cpuint_CLA_TASK_6  = false;
+cla1.cpuint_CLA_TASK_7  = false;
+cla1.cpuint_CLA_TASK_8  = false;
+
 cputimer1.$name                    = "myCPUTIMER0";
 cputimer1.startTimer               = true;
 cputimer1.enableInterrupt          = true;
 cputimer1.emulationMode            = "CPUTIMER_EMULATIONMODE_RUNFREE";
 cputimer1.registerInterrupts       = true;
-cputimer1.timerPeriod              = 999;
+cputimer1.timerPeriod              = 199;
 cputimer1.timerInt.enableInterrupt = true;
 
 dac1.$name            = "DAC0";
 dac1.enableOutput     = true;
 dac1.dacBase          = "DACB_BASE";
 dac1.referenceVoltage = "DAC_REF_ADC_VREFHI";
+
+dac2.$name            = "DAC1";
+dac2.referenceVoltage = "DAC_REF_ADC_VREFHI";
+dac2.enableOutput     = true;
+
+epwm1.$name                                                      = "EPWM0";
+epwm1.epwmTimebase_hsClockDiv                                    = "EPWM_HSCLOCK_DIVIDER_1";
+epwm1.epwmTimebase_counterMode                                   = "EPWM_COUNTER_MODE_UP_DOWN";
+epwm1.epwmActionQualifier_EPWM_AQ_OUTPUT_A_shadowMode            = true;
+epwm1.epwmActionQualifier_EPWM_AQ_OUTPUT_A_ON_TIMEBASE_UP_CMPA   = "EPWM_AQ_OUTPUT_HIGH";
+epwm1.epwmActionQualifier_EPWM_AQ_OUTPUT_A_ON_TIMEBASE_DOWN_CMPA = "EPWM_AQ_OUTPUT_LOW";
+epwm1.epwmTimebase_period                                        = 5000;
+epwm1.epwmCounterCompare_cmpA                                    = 3750;
+epwm1.epwmCounterCompare_cmpB                                    = 100;
+epwm1.epwmEventTrigger_EPWM_SOC_A_triggerEnable                  = true;
+epwm1.epwmEventTrigger_EPWM_SOC_A_triggerEventPrescalar          = "1";
+epwm1.epwmEventTrigger_EPWM_SOC_A_triggerSource                  = "EPWM_SOC_TBCTR_PERIOD";
+epwm1.epwm.$assign                                               = "EPWM1";
+epwm1.epwm.epwm_aPin.$assign                                     = "boosterpack1.40";
+epwm1.epwm.epwm_bPin.$assign                                     = "boosterpack1.39";
+
+gpio1.$name                     = "myGPIO0";
+gpio1.useInterrupt              = true;
+gpio1.gpioPin.$assign           = "boosterpack1.8";
+gpio1.xint.intType              = "GPIO_INT_TYPE_BOTH_EDGES";
+gpio1.xint.registerInterrupts   = true;
+gpio1.xint.enableInt            = true;
+gpio1.xint.xInt.enableInterrupt = true;
+
+inputxbar_input1.$name         = "myINPUTXBARINPUT0";
+gpio1.xint.inputxbar           = inputxbar_input1;
+inputxbar_input1.inputxbarGpio = "GPIO22";
+
+memcfg.init_MEMCFG_SECT_MSGCPUTOCLA1 = true;
+memcfg.init_MEMCFG_SECT_MSGCLA1TOCPU = true;
+memcfg.config_MEMCFG_SECT_LS1        = "CLA_data";
+memcfg.config_MEMCFG_SECT_LS4        = "CLA_prog";
+memcfg.config_MEMCFG_SECT_LS5        = "CLA_prog";
+
+CMD1.$name                         = "CMD0";
+CMD1.sectionMemory_cla1Prog        = ["RAMLS5"];
+CMD1.sectionMemory_claConst        = ["RAMLS1"];
+CMD1.sectionMemory_claScratchpad   = ["RAMLS1"];
+CMD1.sectionMemory_cpuToCla1MsgRAM = ["CPUTOCLA_MSGRAM"];
+CMD1.sectionMemory_cla1ToCpuMsgRAM = ["CLATOCPU_MSGRAM"];
